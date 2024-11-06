@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/pokemon.dart';
@@ -124,7 +123,7 @@ class PokeCard2 extends StatelessWidget{
           children: [
             SizedBox(
               width: 100,
-              height: 120,
+              height: 115,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: CachedNetworkImage(
@@ -139,7 +138,7 @@ class PokeCard2 extends StatelessWidget{
                 Row(
                   children: [
                     SizedBox(
-                      width: 220,
+                      width: 200,
                       height: 50,
                       child: DecoratedBox(
                         decoration: BoxDecoration(

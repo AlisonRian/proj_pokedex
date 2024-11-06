@@ -1,6 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:proj_pokedex/domain/pokemon.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +9,7 @@ import 'dart:math';
 import '../../repository/repository_imp.dart';
 
 class Daily extends StatefulWidget{
+  const Daily({super.key});
   @override
   State<StatefulWidget> createState() => _DailyState();
 }
@@ -45,23 +45,28 @@ class _DailyState extends State<Daily> {
 
     }else{
       final now = DateTime.now();
-      final oldDate = DateTime.parse(prefs.getString(old)!);;
+      final oldDate = DateTime.parse(prefs.getString(old)!);
       if(now.difference(oldDate).inHours < 24){
         final p = await repositoryImp.findPokeById(id: prefs.getInt('pokemon')!);
         setState(() {
           pokemon = p;
           loading = false;
         });
-        AwesomeDialog(
-          context: context,
-          dialogType: DialogType.info,
-          animType: AnimType.rightSlide,
-          title: 'Atenção!',
-          desc: 'Pokemon diário já capturado, volte amanhã.',
-          btnOkOnPress: () {
-            Navigator.pop(context);
-          },
-        ).show();
+        List<String> verif = prefs.getStringList('captured') ?? [];
+        final pokemonId = prefs.getInt('pokemon')!;
+        if (verif.contains(pokemonId.toString())){
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.info,
+            animType: AnimType.rightSlide,
+            title: 'Atenção!',
+            desc: 'Pokemon diário já capturado, volte amanhã.',
+            btnOkOnPress: () {
+              Navigator.pop(context);
+            },
+          ).show();
+        }
+
       } else {
         final random = min + Random().nextInt(max - min);
         final now = DateTime.now();
@@ -91,6 +96,12 @@ class _DailyState extends State<Daily> {
     final repositoryImp = Provider.of<RepositoryImp>(context, listen: false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> captured = prefs.getStringList('captured') ?? [];
+
+    final pokemonId = prefs.getInt('pokemon')!;
+    if (captured.contains(pokemonId.toString())) {
+      alertDialog('Atenção', '${pokemon.name} já foi capturado!').show();
+      return;
+    }
     if(prefs.containsKey('captured')) {
       final pokes = prefs.getStringList('captured')!.length;
       if(pokes < 6){
@@ -99,28 +110,12 @@ class _DailyState extends State<Daily> {
               id: prefs.getInt('pokemon')!);
           captured.add(p.id.toString());
           prefs.setStringList('captured', captured);
-          showDialog(context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  content: Text("${p.name} foi capturado com sucesso!"),
-                );
-              });
+          capturedDialog('Sucesso!','${pokemon.name} foi capturado com sucesso!!!').show();
         }else{
-          showDialog(context: context,
-              builder: (BuildContext context) {
-                return const AlertDialog(
-                  content: Text("... A captura falhou!"),
-                );
-              });
+          failedDialog('${pokemon.name} escapou!','Jogue a pokébola novamente.').show();
         }
       } else {
-        showDialog(context: context,
-            builder: (BuildContext context) {
-              return const AlertDialog(
-                content: Text(
-                    "Você já capturou 6 pokemons! eu acho que alguem vai ter que ser abandonado..."),
-              );
-            });
+        alertDialog('Alerta!','Você já possui 6 pokémons, liberte algum para poder capturar mais.').show();
       }
     }else{
       if(catchRate()){
@@ -128,39 +123,63 @@ class _DailyState extends State<Daily> {
             id: prefs.getInt('pokemon')!);
         captured.add(p.id.toString());
         prefs.setStringList('captured', captured);
-        showDialog(context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                content: Text("${p.name} foi capturado com sucesso!"),
-              );
-            });
+        capturedDialog('Sucesso!','${pokemon.name} foi capturado com sucesso!!!').show();
       }else{
-        showDialog(context: context,
-            builder: (BuildContext context) {
-              return const AlertDialog(
-                content: Text("... A captura falhou!"),
-              );
-            });
+        failedDialog('${pokemon.name} escapou!','Jogue a pokébola novamente.').show();
       }
 
     }
 
 
   }
+
+  AwesomeDialog alertDialog(String title, String desc) {
+    return AwesomeDialog(
+        context: context,
+        dialogType: DialogType.info,
+        animType: AnimType.rightSlide,
+        title: title,
+        desc: desc,
+        btnOkOnPress: () {},
+      );
+  }
+
+  AwesomeDialog failedDialog(String title, String desc) {
+    return AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: title,
+          desc: desc,
+          btnOkOnPress: () {},
+        );
+  }
+  AwesomeDialog capturedDialog(String title, String desc) {
+    return AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.rightSlide,
+        title: title,
+        desc: desc,
+        btnOkOnPress: () {
+          Navigator.pop(context);
+        },
+      );
+  }
   bool catchRate(){
     final int random = 0 + Random().nextInt(100 - 0);
-    print(random);
     if(random > 50){
       return true;
     }
     return false;
   }
+
   bool _isPressed = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Daily', style: TextStyle(color: Colors.white),),
+          title: const Text('Diário', style: TextStyle(color: Colors.white),),
           backgroundColor: Colors.redAccent,
         ),
         body: loading
@@ -207,7 +226,7 @@ class _DailyState extends State<Daily> {
                   ),
                 ],
               ),
-              const SizedBox(height: 150),
+              const SizedBox(height: 120),
               Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
@@ -217,7 +236,7 @@ class _DailyState extends State<Daily> {
                     onTap: () async{
                       await catchPoke();
                     },
-                    child: AnimatedContainer(duration: Duration(microseconds: 100),
+                    child: AnimatedContainer(duration: const Duration(microseconds: 100),
                       width: _isPressed ? 140 : 150,
                       height: _isPressed ? 140 : 150,
                       decoration: BoxDecoration(
@@ -229,7 +248,8 @@ class _DailyState extends State<Daily> {
                     ),
                   ),
                 ],
-              )
+              ),
+
         ],
         )
     );

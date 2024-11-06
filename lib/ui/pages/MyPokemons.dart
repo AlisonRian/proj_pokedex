@@ -1,6 +1,4 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +8,8 @@ import '../../repository/repository_imp.dart';
 import '../widgets/pokecard.dart';
 
 class MyPokemons extends StatefulWidget{
+  const MyPokemons({super.key});
+
   @override
   State<StatefulWidget> createState() => _MyPokemonsState();
   }
@@ -59,15 +59,22 @@ class _MyPokemonsState extends State<MyPokemons>{
       ),
       body: loading
           ? const Center(child: CircularProgressIndicator())
-          :Expanded(child:
-          Column(
-            children: [
-              SizedBox(height: 5),
-              for(Pokemon p in pokemon)
-                  PokeCard2(pokemon: p, url:'https://raw.githubusercontent.com/fanzeyi/pokemon.json/refs/heads/master/images/')
-        ],
+          :Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height,
+          maxWidth: MediaQuery.of(context).size.width,
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 5),
+            for (Pokemon p in pokemon)
+              PokeCard2(
+                pokemon: p,
+                url: 'https://raw.githubusercontent.com/fanzeyi/pokemon.json/refs/heads/master/images/',
+              ),
+          ],
+        ),
       )
-      ) ,
     );
   }
 

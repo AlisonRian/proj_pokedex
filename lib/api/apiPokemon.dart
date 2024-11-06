@@ -32,7 +32,6 @@ class ApiPokemon{
       "https://poke-server-j5az.onrender.com/pokemon",
     );
     if(res.statusCode == HttpStatus.ok){
-      print('Aqui');
       final pokemon = (res.data as List<dynamic>)
           .map((pokemonJson) => Pokemon.fromJson(pokemonJson))
           .toList();

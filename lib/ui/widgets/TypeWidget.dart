@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/pokemon.dart';
@@ -18,6 +17,10 @@ class TypeWidget extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: pokemon.getColor(pokemon.type1),
+          border: Border.all(
+            color: Colors.black, // Cor da borda
+            width: 0.5,
+          ),
           borderRadius: BorderRadius.circular(15),
         ),
         child: Padding(
@@ -28,6 +31,13 @@ class TypeWidget extends StatelessWidget {
                 fontSize: 18,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    offset: Offset(1.0, 1.0),
+                    blurRadius: 2.0,
+                    color: Colors.black,
+                  ),
+                ],
               ),
             ),
           ),

@@ -1,10 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:proj_pokedex/ui/widgets/TypeWidget2.dart';
-import 'package:getwidget/getwidget.dart';
-
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -241,11 +238,23 @@ class _Details2State extends State<Details2> {
                       color: Colors.white,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(1.0, 1.0),
+                          blurRadius: 2.0,
+                          color: Colors.blueGrey,
+                        ),
+                      ],
                     )
                 ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  backgroundColor: Colors.redAccent
+                  backgroundColor: Colors.redAccent,
+                  side: const BorderSide(
+                      color: Colors.black,
+                      width: 2.0,
+                      style: BorderStyle.solid
+                  ),
                 ),
               )
 

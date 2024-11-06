@@ -1,9 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:proj_pokedex/ui/widgets/TypeWidget2.dart';
-import 'package:getwidget/getwidget.dart';
-
 import 'package:provider/provider.dart';
 
 import '../../domain/pokemon.dart';
